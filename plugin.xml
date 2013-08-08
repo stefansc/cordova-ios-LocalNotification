@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.apache.cordova.localnotification"
+    version="1.0.0">
+
+    <name>Cordova iOS LocalNotification</name>
+
+    <engines>
+        <engine name="cordova" version=">=2.3.0" />
+    </engines>
+
+  <!-- ios -->
+    <platform name="ios">
+        <js-module src="www/js/cordova.LocalNotification.js" name="localNotification">
+             <clobbers target="localNotification" />
+         </js-module>
+
+        <!-- CDV >= 2.7 -->
+        <config-file target="config.xml" parent="/*">
+            <feature name="LocalNotification">
+                <param name="ios-package" value="LocalNotification" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/LocalNotification.h" />
+        <source-file src="src/ios/LocalNotification.m" />
+
+    <resource-file src="horn.caf" />
+  </platform>
+
+</plugin>

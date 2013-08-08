@@ -6,6 +6,15 @@
 #import "LocalNotification.h"
 #import <Cordova/CDV.h>
 
+@implementation CDVPlugin (LocalNotificationAdditions)
+
+- (void)didReceiveLocalNotification:(NSNotification *)notification
+{
+    // UILocalNotification* localNotification = [notification object]; // get the payload as a LocalNotification
+}
+
+@end
+
 @implementation LocalNotification
 
 -(void)addNotification:(CDVInvokedUrlCommand*)command {
@@ -19,7 +28,7 @@
     
     UILocalNotification* notif = [[UILocalNotification alloc] init];
 
-	double fireDate             = [[command.arguments objectAtIndex:0] doubleValue];
+    double fireDate             = [[command.arguments objectAtIndex:0] doubleValue];
     NSString *alertBody         =  [command.arguments objectAtIndex:1];
     NSNumber *repeatInterval    =  [command.arguments objectAtIndex:2];
     NSString *soundName         =  [command.arguments objectAtIndex:3];
@@ -31,7 +40,7 @@
     notif.soundName         = soundName;
     notif.timeZone          = [NSTimeZone defaultTimeZone];
     
-	NSDictionary *userDict = [NSDictionary dictionaryWithObjectsAndKeys:
+    NSDictionary *userDict = [NSDictionary dictionaryWithObjectsAndKeys:
                                 notificationId    , @"notificationId",
                                 command.callbackId, @"callbackId",
                                 nil
@@ -47,17 +56,17 @@
 - (void)cancelNotification:(CDVInvokedUrlCommand*)command {
     
     NSString *notificationId    = [command.arguments objectAtIndex:0];
-	NSArray *notifications      = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    NSArray *notifications      = [[UIApplication sharedApplication] scheduledLocalNotifications];
     
-	for (UILocalNotification *notification in notifications) {
+    for (UILocalNotification *notification in notifications) {
         
-		NSString *notId = [notification.userInfo objectForKey:@"notificationId"];
+        NSString *notId = [notification.userInfo objectForKey:@"notificationId"];
         
-		if ([notificationId isEqualToString:notId]) {
-			[[UIApplication sharedApplication] cancelLocalNotification: notification];
-		}
+        if ([notificationId isEqualToString:notId]) {
+            [[UIApplication sharedApplication] cancelLocalNotification: notification];
+        }
         
-	}
+    }
 
 }
 
@@ -72,14 +81,30 @@
     
     UILocalNotification* notif  = [notification object];
     
+    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+    
+    NSString* stateStr = (state == UIApplicationStateActive ? @"active" : @"background");
+    
     CDVPluginResult* pluginResult = nil;
     NSString* javaScript          = nil;
     
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: [notif.userInfo objectForKey:@"notificationId"]];
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    [params setObject:stateStr forKey:@"appState"];
+    [params setObject:[notif.userInfo objectForKey:@"notificationId"] forKey:@"notificationId"];
+    
+    
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK  messageAsDictionary:params];
     javaScript   = [pluginResult toSuccessCallbackString: [notif.userInfo objectForKey:@"callbackId"]];
     
     [self writeJavascript:javaScript];
-    
+}
+
+- (void)pluginInitialize
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveLocalNotification:)
+                                                 name:CDVLocalNotification
+                                               object:nil];
 }
 
 
