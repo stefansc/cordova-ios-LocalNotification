@@ -8,13 +8,13 @@ Cordova Local Notification Plugin
 Installing the plugin
 ---------------------
 
-First you have to take a backup-copy of your cordova_plugins.js because it will be overwrite (i dont know why).
+First you have to take a backup-copy of your cordova_plugins.js because it will be overwrite (i don't know why).
 
 After that you can install the plugin via plugman for example:
 
     $ plugman install --platform ios --project ./platforms/ios --plugin https://github.com/stefansc/cordova-ios-LocalNotification.git
 
-After that yo have to modify your cordova_plugins.js file.
+After that you have to modify your cordova_plugins.js file.
 
 
 Using the plugin
@@ -46,4 +46,3 @@ To Do
 -----
 - Implement badges (currently property is ignored)
 - JavaScript validation
-- support for UILocalNotification.alertAction
